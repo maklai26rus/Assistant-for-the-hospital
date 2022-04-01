@@ -8,16 +8,23 @@ from decouple import config
 SECRET_KEY_BOT = config('SECRET_KEY_BOT')
 
 bot = telebot.TeleBot(SECRET_KEY_BOT)
+TEXT = TextBot()
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'telephone'])
 def run(message):
-    command_user()
+    print(TEXT.messenge['welcome'])
+    if message.text == '/telephone':
+        bot.send_message(message.chat.id, TEXT.messenge['welcome'])
+    else:
+        print('ne telefon')
+    # command_user()
 
 
-@bot.message_handler(content_types=['text'])
-def command_user(message):
-    print('первые шаги')
+# @bot.message_handler(content_types=['text'])
+# def command_user(message):
+#     print(TEXT.messenge['welcome'])
+#     bot.send_message(message.chat.id, TEXT.messenge['welcome'])
 
 
 def main():
