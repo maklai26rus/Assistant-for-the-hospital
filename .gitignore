@@ -124,6 +124,10 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+phones.json
 
 # Pyre type checker
 .pyre/
+
+#phone bd
+bd/phones.json
