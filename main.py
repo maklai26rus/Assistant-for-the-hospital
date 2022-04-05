@@ -1,5 +1,6 @@
 import telebot
 from bot_message.bot_message import TextBot
+import json
 
 from decouple import config
 
@@ -13,6 +14,8 @@ TEXT = TextBot()
 
 @bot.message_handler(commands=['start', 'telephone_directory', 'print', 'location'])
 def run(message):
+    with open('phones.json', 'r', encoding='utf-8') as ff:
+        welcome = json.load(ff)
     if message.text == '/start':
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.add(
@@ -21,7 +24,7 @@ def run(message):
         keyboard.add(telebot.types.InlineKeyboardButton(text='Как проехать', callback_data='/location'))
         keyboard.add(telebot.types.InlineKeyboardButton(text='ТЕСТ', callback_data='/test'))
         bot.send_message(message.from_user.id,
-                         f"{TEXT.message['welcome']}\n",
+                         f"{welcome['Справочник']['Добро пожаловать']}\n",
                          reply_markup=keyboard)
         bot.register_next_step_handler(message, message_processing)
 
@@ -31,6 +34,7 @@ def run(message):
 @bot.message_handler(content_types=['text'])
 def message_processing(message):
     if message.text == '/telephone_directory':
+
         bot.send_message(message.chat.id, TEXT.message['telephone_directory'])
     elif message.text == '/print':
         bot.send_message(message.chat.id, TEXT.message['print'])
@@ -46,8 +50,8 @@ def message_processing(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     if call.data == '/telephone_directory':
-        bot.edit_message_text(chat_id=call.message.chat.id,
-                              message_id=call.message.message_id, text=f"{TEXT.message['telephone_directory']}")
+        test_m(call.message)
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='👌')
     elif call.data == '/print':
         bot.edit_message_text(chat_id=call.message.chat.id,
                               message_id=call.message.message_id, text=TEXT.message['print'])
@@ -58,10 +62,26 @@ def callback(call):
         bot.edit_message_text(chat_id=call.message.chat.id,
                               message_id=call.message.message_id, text=TEXT.message['test'])
         test_m(call.message)
+    else:
+        t = {"/informatic": {"Информатика тех.кабинет": "+79187420881", "2": "356310"}, "/ekonomist": {"1": "357112"}}
+        for p in t[call.data].items():
+            print(p, )
+
+            bot.send_message(call.message.chat.id, f"{' '.join(p)}")
 
 
 def test_m(message):
-    bot.send_message(message.chat.id, 'все правильно')
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    # k = ['Инофрматика', 'Инофрматика2', 'Инофрматика3']
+    t = {"/informatic": "Инофрматика", "/ekonomist": "Экономисты"}
+    for k, v in t.items():
+        keyboard.add(
+            telebot.types.InlineKeyboardButton(text=str(v), callback_data=k))
+    bot.send_message(message.chat.id,
+                     f"Выбедите нужное отделение \n",
+                     reply_markup=keyboard)
+
+    # bot.send_message(message.chat.id, 'все правильно')
 
     # else:
     #     bot.edit_message_text(chat_id=call.message.chat.id,
