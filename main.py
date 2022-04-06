@@ -9,12 +9,9 @@ bot = telebot.TeleBot(SECRET_KEY_BOT)
 TEXT = TextBot()
 
 
-@bot.message_handler(commands=['start', 'telephone_directory', 'print', 'location'])
+# @bot.message_handler(commands=['start', 'telephone_directory', 'print', 'location'])
+@bot.message_handler(content_types=['text'])
 def run(message):
-    run_bot(message)
-
-
-def run_bot(message):
     if message.text == '/start':
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.add(
@@ -25,15 +22,8 @@ def run_bot(message):
         bot.send_message(message.from_user.id,
                          f"*{TEXT.date_json['Справочник']['Добро пожаловать']}*\n",
                          reply_markup=keyboard, parse_mode="Markdown")
-    bot.register_next_step_handler(message, message_processing)
-
-
-@bot.message_handler(content_types=['text'])
-def message_processing(message):
-    run_bot(message)
-    if message.text == '/telephone_directory':
+    elif message.text == '/telephone_directory':
         phone_processing(message)
-        # bot.send_message(message.chat.id, TEXT.message['telephone_directory'])
     elif message.text == '/print':
         bot.send_message(message.chat.id, TEXT.message['print'])
     elif message.text == '/location':
@@ -41,8 +31,12 @@ def message_processing(message):
     elif message.text == '/test':
         bot.send_message(message.chat.id, TEXT.message['test']),
         bot.register_next_step_handler(message, phone_processing)
-    # else:
-    #     bot.send_message(message.chat.id, TEXT.messenge['development'])
+    bot.register_next_step_handler(message, message_processing)
+
+
+@bot.message_handler(content_types=['text'])
+def message_processing(message):
+    bot.send_message(message.chat.id, TEXT.date_json['ERROR'])
 
 
 @bot.callback_query_handler(func=lambda call: True)
