@@ -26,21 +26,17 @@ def run(message):
         keyboard.add(
             telebot.types.InlineKeyboardButton(text='Консультативно-диагностичский центр ☎️',
                                                callback_data='/consulting_diagnostic_center'))
-        keyboard.add(telebot.types.InlineKeyboardButton(text='Печать справок', callback_data='/print'))
         keyboard.add(telebot.types.InlineKeyboardButton(text='Как проехать', callback_data='/location'))
-        keyboard.add(telebot.types.InlineKeyboardButton(text='ТЕСТ', callback_data='/тест'))
+        # keyboard.add(telebot.types.InlineKeyboardButton(text='Печать справок', callback_data='/print'))
         bot.send_message(message.from_user.id,
                          f"*{TEXT.main_unit['Справочник']['Добро пожаловать']}*\n",
                          reply_markup=keyboard, parse_mode="Markdown")
     elif message.text == '/round_the_clock_hospital':
         phone_processing(message)
-    elif message.text == '/print':
-        bot.send_message(message.chat.id, TEXT.message['print'])
+    elif message.text == '/consulting_diagnostic_center':
+        consulting_diagnostic_center(message)
     elif message.text == '/location':
-        bot.send_message(message.chat.id, TEXT.message['location'])
-    elif message.text == '/test':
-        bot.send_message(message.chat.id, TEXT.message['test']),
-        bot.register_next_step_handler(message, phone_processing)
+        get_location(message)
     else:
         bot.send_message(message.chat.id, TEXT.main_unit['ERROR'])
 
@@ -62,16 +58,9 @@ def callback(call):
         # bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='👌')
     elif call.data == '/consulting_diagnostic_center':
         consulting_diagnostic_center(call.message)
-    elif call.data == '/print':
-        bot.edit_message_text(chat_id=call.message.chat.id,
-                              message_id=call.message.message_id, text=TEXT.message['print'])
     elif call.data == '/location':
-        bot.edit_message_text(chat_id=call.message.chat.id,
-                              message_id=call.message.message_id, text=TEXT.message['location'])
-    elif call.data == '/тест':
-        bot.edit_message_text(chat_id=call.message.chat.id,
-                              message_id=call.message.message_id, text=TEXT.message['test'])
-        phone_processing(call.message)
+        get_location(call.message)
+
     else:
 
         if call.data in TEXT.round_the_clock_hospital['Телефонная книга']:
@@ -111,6 +100,11 @@ def consulting_diagnostic_center(message):
     bot.send_message(message.chat.id,
                      f"Выбедите нужное отделение \n",
                      reply_markup=keyboard)
+
+
+def get_location(message):
+    bot.send_message(message.chat.id, f"*{TEXT.main_unit['LOCATION']}*", parse_mode="Markdown")
+    bot.send_location(message.chat.id, latitude=45.03941329750142, longitude=41.93704757646342)
 
 
 def main():
