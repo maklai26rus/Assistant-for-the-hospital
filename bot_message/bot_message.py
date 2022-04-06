@@ -1,8 +1,13 @@
 import json
 
 
-def read_json_file():
-    with open('phones.json', 'r', encoding='utf-8') as ff:
+def read_json_file(file):
+    """
+    Читаем json file
+    :param file:
+    :return: возращает словарь из json
+    """
+    with open(file, 'r', encoding='utf-8') as ff:
         j = json.load(ff)
     return j
 
@@ -15,7 +20,9 @@ class TextBot:
 
     def __init__(self):
         self.message = self.main_text()
-        self.date_json = read_json_file()
+        self.main_unit = read_json_file('main_unit.json')
+        self.round_the_clock_hospital = read_json_file('round_the_clock_hospital.json')
+        self.consulting_diagnostic = read_json_file('consulting_diagnostic_center.json')
 
     def main_text(self):
         """Основной текст"""
@@ -27,5 +34,4 @@ class TextBot:
                    'test': 'Модуль test в разработке',
 
                    }
-
         return message

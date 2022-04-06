@@ -124,10 +124,13 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
-phones.json
+
+round_the_clock_hospital.json
+consulting_diagnostic_center.json
 
 # Pyre type checker
 .pyre/
 
 #phone bd
-bd/phones.json
+round_the_clock_hospital.json
+consulting_diagnostic_center.json
