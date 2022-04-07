@@ -21,15 +21,15 @@ def run(message):
     if message.text == '/start':
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.add(
-            telebot.types.InlineKeyboardButton(text='Круглосуточный стационар ☎️',
+            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['round_the_clock_hospital'],
                                                callback_data='/round_the_clock_hospital'))
         keyboard.add(
-            telebot.types.InlineKeyboardButton(text='Консультативно-диагностичский центр ☎️',
+            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['consulting_diagnostic_center'],
                                                callback_data='/consulting_diagnostic_center'))
-        keyboard.add(telebot.types.InlineKeyboardButton(text='Как проехать', callback_data='/location'))
+        keyboard.add(telebot.types.InlineKeyboardButton(text=TEXT.main_unit['location'], callback_data='/location'))
         # keyboard.add(telebot.types.InlineKeyboardButton(text='Печать справок', callback_data='/print'))
         bot.send_message(message.from_user.id,
-                         f"*{TEXT.main_unit['Справочник']['Добро пожаловать']}*\n",
+                         f"*{TEXT.main_unit['Добро пожаловать']}*\n",
                          reply_markup=keyboard, parse_mode="Markdown")
     elif message.text == '/round_the_clock_hospital':
         phone_processing(message)
