@@ -20,14 +20,8 @@ def run(message):
     """
     if message.text == '/start':
         keyboard = telebot.types.InlineKeyboardMarkup()
-        keyboard.add(
-            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['round_the_clock_hospital'],
-                                               callback_data='/round_the_clock_hospital'))
-        keyboard.add(
-            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['consulting_diagnostic_center'],
-                                               callback_data='/consulting_diagnostic_center'))
+        keyboard.add(telebot.types.InlineKeyboardButton(text='Телефоны', callback_data='/phones'))
         keyboard.add(telebot.types.InlineKeyboardButton(text=TEXT.main_unit['location'], callback_data='/location'))
-        # keyboard.add(telebot.types.InlineKeyboardButton(text='Печать справок', callback_data='/print'))
         bot.send_message(message.from_user.id,
                          f"*{TEXT.main_unit['Добро пожаловать']}*\n",
                          reply_markup=keyboard, parse_mode="Markdown")
@@ -54,24 +48,51 @@ def callback(call):
     :return:
     """
     if call.data == '/round_the_clock_hospital':
-        phone_processing(call.message)
-        # bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='👌')
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+         TEXT.round_the_clock_hospital['Телефонная книга']]
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                              text=f"*{TEXT.main_unit['round_the_clock_hospital']}*", parse_mode="Markdown",
+                              reply_markup=keyboard)
     elif call.data == '/consulting_diagnostic_center':
-        consulting_diagnostic_center(call.message)
-    elif call.data == '/location':
-        get_location(call.message)
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+         TEXT.consulting_diagnostic['Телефонная книга']]
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                              text=f"*{TEXT.main_unit['consulting_diagnostic_center']}*", parse_mode="Markdown",
+                              reply_markup=keyboard)
 
+    elif call.data == '/location':
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                              text=f"*{TEXT.main_unit['LOCATION']}*", parse_mode="Markdown")
+        bot.send_location(call.message.chat.id, latitude=45.03941329750142, longitude=41.93704757646342)
+
+    elif call.data == '/phones':
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        keyboard.add(
+            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['round_the_clock_hospital'],
+                                               callback_data='/round_the_clock_hospital'))
+        keyboard.add(
+            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['consulting_diagnostic_center'],
+                                               callback_data='/consulting_diagnostic_center'))
+        # keyboard.add(telebot.types.InlineKeyboardButton(text=TEXT.main_unit['location'], callback_data='/location'))
+
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                              text=f"*{TEXT.main_unit['phones']}*", parse_mode="Markdown",
+                              reply_markup=keyboard)
     else:
 
         if call.data in TEXT.round_the_clock_hospital['Телефонная книга']:
             _phone_dict = TEXT.round_the_clock_hospital['Телефонная книга'][call.data]['Телефон']
         elif call.data in TEXT.consulting_diagnostic['Телефонная книга']:
             _phone_dict = TEXT.consulting_diagnostic['Телефонная книга'][call.data]['Телефон']
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                              text=f"*{str(call.data.replace('/', ''))}*:", parse_mode="Markdown")
 
+        t = str()
         for p, v in _phone_dict.items():
-            bot.send_message(call.message.chat.id, f"{p} - {v}")
+            t += f"{p} : {v} \n"
+
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                              text=f"{t}")
 
 
 def phone_processing(message):
