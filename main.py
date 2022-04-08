@@ -87,7 +87,7 @@ def callback(call):
         elif call.data in TEXT.polyclinic['Телефонная книга']:
             _phone_dict = TEXT.polyclinic['Телефонная книга'][call.data]['Телефон']
 
-        t = str()
+        t = f"{call.data.replace('/', '')}:\n"
         for p, v in _phone_dict.items():
             t += f"{p} : {v} \n"
 
