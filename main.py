@@ -134,6 +134,8 @@ def callback6(call):
     for p, v in _phone_dict.items():
         t += f"{p} : {v} \n"
 
+    TEXT.step_0 = 0
+    TEXT.step_5 = 5
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                           text=f"{t}")
 
