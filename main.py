@@ -36,8 +36,8 @@ def run(message):
 def start_main(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
     keyboard.add(
-        telebot.types.InlineKeyboardButton(text='Телефоны', callback_data='/phones'))
-    keyboard.add(telebot.types.InlineKeyboardButton(text=TEXT.main_unit['location'], callback_data='/location'))
+        telebot.types.InlineKeyboardButton(text=TEXT.main_unit['phones_menu'], callback_data='/phones'))
+    keyboard.add(telebot.types.InlineKeyboardButton(text=TEXT.main_unit['address_menu'], callback_data='/location'))
     bot.send_message(message.from_user.id,
                      f"*{TEXT.main_unit['Добро пожаловать']}*\n",
                      reply_markup=keyboard, parse_mode="Markdown")
