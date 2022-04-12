@@ -22,18 +22,10 @@ def run(message):
     """
     if message.text == '/start':
         start_menu(message)
-    # elif message.text == '/hospital':
-    #     phone_processing(message)
-    # elif message.text == '/polyclinic':
-    #     consulting_diagnostic_center(message)
     elif message.text == '/location':
         get_location(message)
     else:
         bot.send_message(message.chat.id, TEXT.main_unit['ERROR'])
-
-    keyboard = InlineKeyboardMarkup()
-    keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
-    bot.register_next_step_handler(message, start_menu)
 
 
 def start_menu(message):
@@ -65,17 +57,19 @@ def callback_phones(call):
     """
 
     keyboard = InlineKeyboardMarkup()
-    if call.data == '/phones':
-        keyboard.add(
-            InlineKeyboardButton(text=TEXT.main_unit['hospital'],
-                                 callback_data='/hospital', ))
-        keyboard.add(
-            InlineKeyboardButton(text=TEXT.main_unit['polyclinic'],
-                                 callback_data='/polyclinic'))
 
-        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                              text=f"*{TEXT.main_unit['phones']}*", parse_mode="Markdown",
-                              reply_markup=keyboard)
+    keyboard.add(
+        InlineKeyboardButton(text=TEXT.main_unit['hospital'],
+                             callback_data='/hospital', ))
+    keyboard.add(
+        InlineKeyboardButton(text=TEXT.main_unit['polyclinic'],
+                             callback_data='/polyclinic'))
+
+    keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
+
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                          text=f"*{TEXT.main_unit['phones']}*", parse_mode="Markdown",
+                          reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: call.data in PHONES_COM)
@@ -86,7 +80,7 @@ def callback_phones_com(call):
     :return:
     """
     keyboard = InlineKeyboardMarkup()
-    inline_btn_menu = InlineKeyboardButton('Меню', callback_data='/menu')
+    inline_btn_menu = InlineKeyboardButton(TEXT.main_unit['short'], callback_data='/menu')
     inline_btn_3 = InlineKeyboardButton('<<', callback_data='<<')
     inline_btn_4 = InlineKeyboardButton('>>', callback_data='>>')
 
@@ -146,6 +140,12 @@ def callback_location(call):
     main_menu(call)
 
 
+def get_location(message):
+    bot.send_message(message.chat.id, f"*{TEXT.main_unit['LOCATION']}*", parse_mode="Markdown")
+    # bot.send_location(message.chat.id, latitude=45.03941329750142, longitude=41.93704757646342)
+    bot.send_location(message.chat.id, latitude=TEXT.main_unit['latitude'], longitude=TEXT.main_unit['longitude'])
+
+
 def main_menu(call):
     """
     Меню выдаваемое в конце диолога
@@ -191,40 +191,6 @@ def callback_true(call):
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                           text=f"{t}")
     main_menu(call)
-
-
-def phone_processing(message):
-    """
-    Обработка телефоного справочника hospital.json
-    :param message:
-    :return:
-    """
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
-     TEXT.hospital['Телефонная книга']]
-    bot.send_message(message.chat.id,
-                     f"Выбедите нужное отделение \n",
-                     reply_markup=keyboard)
-
-
-def consulting_diagnostic_center(message):
-    """
-    Обработка телефоного справочника consulting_diagnostic.json
-    :param message:
-    :return:
-    """
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
-     TEXT.polyclinic['Телефонная книга']]
-    bot.send_message(message.chat.id,
-                     f"Выбедите нужное отделение \n",
-                     reply_markup=keyboard)
-
-
-def get_location(message):
-    bot.send_message(message.chat.id, f"*{TEXT.main_unit['LOCATION']}*", parse_mode="Markdown")
-    # bot.send_location(message.chat.id, latitude=45.03941329750142, longitude=41.93704757646342)
-    bot.send_location(message.chat.id, latitude=TEXT.main_unit['latitude'], longitude=TEXT.main_unit['longitude'])
 
 
 def main():
