@@ -22,6 +22,7 @@ class TextBot:
         self.main_unit = read_json_file('bot_message/main_unit.json')
         self.hospital = read_json_file('bot_message/hospital.json')
         self.polyclinic = read_json_file('bot_message/polyclinic.json')
+        self.administration = read_json_file('bot_message/administration.json')
         self.step = 8
         self.step_0 = 0
         self.step_5 = self.step

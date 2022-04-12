@@ -8,7 +8,7 @@ SECRET_KEY_BOT = config('SECRET_KEY_BOT')
 
 bot = telebot.TeleBot(SECRET_KEY_BOT)
 TEXT = TextBot()
-PHONES_COM = ['/polyclinic', '/hospital', '>>', '<<']
+PHONES_COM = ['/polyclinic', '/hospital', '/administration', '>>', '<<']
 
 
 @bot.message_handler(content_types=['text'])
@@ -65,6 +65,10 @@ def callback_phones(call):
         InlineKeyboardButton(text=TEXT.main_unit['polyclinic'],
                              callback_data='/polyclinic'))
 
+    keyboard.add(
+        InlineKeyboardButton(text=TEXT.main_unit['administration'],
+                             callback_data='/administration'))
+
     keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
 
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
@@ -86,6 +90,8 @@ def callback_phones_com(call):
 
     if call.data == "/hospital":
         TEXT.dept = [v for v in TEXT.hospital['Телефонная книга']]
+    elif call.data == "/administration":
+        TEXT.dept = [v for v in TEXT.administration['Телефонная книга']]
     elif call.data == "/polyclinic":
         TEXT.dept = [v for v in TEXT.polyclinic['Телефонная книга']]
 
@@ -180,6 +186,8 @@ def callback_true(call):
         _phone_dict = TEXT.hospital['Телефонная книга'][call.data]['Телефон']
     elif call.data in TEXT.polyclinic['Телефонная книга']:
         _phone_dict = TEXT.polyclinic['Телефонная книга'][call.data]['Телефон']
+    elif call.data in TEXT.administration['Телефонная книга']:
+        _phone_dict = TEXT.administration['Телефонная книга'][call.data]['Телефон']
 
     t = f"{call.data.replace('/', '')}:\n"
     for p, v in _phone_dict.items():
@@ -194,8 +202,8 @@ def callback_true(call):
 
 
 def main():
-    # bot.infinity_polling()
-    bot.polling(timeout=1)
+    bot.infinity_polling()
+    # bot.polling(timeout=1)
 
 
 if __name__ == "__main__":
