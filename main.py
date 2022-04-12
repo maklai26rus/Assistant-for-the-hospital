@@ -86,6 +86,9 @@ def callback_phones_com(call):
     :return:
     """
     keyboard = InlineKeyboardMarkup()
+    inline_btn_menu = InlineKeyboardButton('Меню', callback_data='/menu')
+    inline_btn_3 = InlineKeyboardButton('<<', callback_data='<<')
+    inline_btn_4 = InlineKeyboardButton('>>', callback_data='>>')
 
     if call.data == "/hospital":
         TEXT.dept = [v for v in TEXT.hospital['Телефонная книга']]
@@ -102,7 +105,8 @@ def callback_phones_com(call):
     if TEXT.step_0 <= -1:
         [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
          TEXT.dept[0:TEXT.step]]
-        keyboard.add(InlineKeyboardButton('>>', callback_data='>>'))
+
+        keyboard.row(inline_btn_menu, inline_btn_4)
 
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                               text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
@@ -111,10 +115,7 @@ def callback_phones_com(call):
         [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
          TEXT.dept[TEXT.step_0:TEXT.step_5]]
 
-        inline_btn_3 = InlineKeyboardButton('<<', callback_data='<<')
-        inline_btn_4 = InlineKeyboardButton('>>', callback_data='>>')
-
-        keyboard.row(inline_btn_3, inline_btn_4)
+        keyboard.row(inline_btn_3, inline_btn_menu, inline_btn_4)
 
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                               text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
@@ -122,7 +123,8 @@ def callback_phones_com(call):
     elif TEXT.step_5 >= len(TEXT.dept):
         [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
          TEXT.dept[len(TEXT.dept) - TEXT.step:TEXT.step_5]]
-        keyboard.add(InlineKeyboardButton('<<', callback_data='<<'))
+
+        keyboard.row(inline_btn_3, inline_btn_menu)
 
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                               text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
@@ -132,7 +134,7 @@ def callback_phones_com(call):
 @bot.callback_query_handler(func=lambda call: call.data == '/location')
 def callback_location(call):
     """
-    Локация
+    Показывает место положение здания
     :param call:
     :return:
     """
@@ -145,7 +147,8 @@ def callback_location(call):
 
 
 def main_menu(call):
-    """Финальное меню
+    """
+    Меню выдаваемое в конце диолога
     """
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
@@ -154,6 +157,7 @@ def main_menu(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == '/menu')
 def callback_menu(call):
+    """Обработка команды /menu"""
     keyboard = InlineKeyboardMarkup()
     keyboard.add(
         InlineKeyboardButton(text=TEXT.main_unit['phones_menu'], callback_data='/phones'))
