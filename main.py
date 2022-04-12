@@ -81,15 +81,15 @@ def callback2(call):
         TEXT.dept = [v for v in TEXT.polyclinic['Телефонная книга']]
 
     if call.data == '>>':
-        TEXT.step_0 += 5
-        TEXT.step_5 += 5
+        TEXT.step_0 += TEXT.step
+        TEXT.step_5 += TEXT.step
     elif call.data == '<<':
-        TEXT.step_0 -= 5
-        TEXT.step_5 -= 5
+        TEXT.step_0 -= TEXT.step
+        TEXT.step_5 -= TEXT.step
 
     if TEXT.step_0 <= -1:
-        # [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
-        #  TEXT.dept[0:len(TEXT.dept)]]
+        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+         TEXT.dept[0:TEXT.step]]
         keyboard.add(InlineKeyboardButton('>>', callback_data='>>'))
 
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
@@ -108,7 +108,8 @@ def callback2(call):
                               text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
                               reply_markup=keyboard)
     elif TEXT.step_5 >= len(TEXT.dept):
-
+        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+         TEXT.dept[len(TEXT.dept) - TEXT.step:TEXT.step_5]]
         keyboard.add(InlineKeyboardButton('<<', callback_data='<<'))
 
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
