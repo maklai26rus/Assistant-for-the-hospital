@@ -31,12 +31,16 @@ def run(message):
     else:
         bot.send_message(message.chat.id, TEXT.main_unit['ERROR'])
 
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
+    bot.register_next_step_handler(message, start_menu)
+
 
 def start_menu(message):
-    keyboard = telebot.types.InlineKeyboardMarkup()
+    keyboard = InlineKeyboardMarkup()
     keyboard.add(
-        telebot.types.InlineKeyboardButton(text=TEXT.main_unit['phones_menu'], callback_data='/phones'))
-    keyboard.add(telebot.types.InlineKeyboardButton(text=TEXT.main_unit['address_menu'], callback_data='/location'))
+        InlineKeyboardButton(text=TEXT.main_unit['phones_menu'], callback_data='/phones'))
+    keyboard.add(InlineKeyboardButton(text=TEXT.main_unit['address_menu'], callback_data='/location'))
     bot.send_message(message.from_user.id,
                      f"*{TEXT.main_unit['Добро пожаловать']}*\n",
                      reply_markup=keyboard, parse_mode="Markdown")
@@ -60,14 +64,14 @@ def callback_phones(call):
     :return:
     """
 
-    keyboard = telebot.types.InlineKeyboardMarkup()
+    keyboard = InlineKeyboardMarkup()
     if call.data == '/phones':
         keyboard.add(
-            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['hospital'],
-                                               callback_data='/hospital', ))
+            InlineKeyboardButton(text=TEXT.main_unit['hospital'],
+                                 callback_data='/hospital', ))
         keyboard.add(
-            telebot.types.InlineKeyboardButton(text=TEXT.main_unit['polyclinic'],
-                                               callback_data='/polyclinic'))
+            InlineKeyboardButton(text=TEXT.main_unit['polyclinic'],
+                                 callback_data='/polyclinic'))
 
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                               text=f"*{TEXT.main_unit['phones']}*", parse_mode="Markdown",
@@ -81,7 +85,7 @@ def callback_phones_com(call):
     :param call:
     :return:
     """
-    keyboard = telebot.types.InlineKeyboardMarkup()
+    keyboard = InlineKeyboardMarkup()
 
     if call.data == "/hospital":
         TEXT.dept = [v for v in TEXT.hospital['Телефонная книга']]
@@ -96,7 +100,7 @@ def callback_phones_com(call):
         TEXT.step_5 -= TEXT.step
 
     if TEXT.step_0 <= -1:
-        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+        [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
          TEXT.dept[0:TEXT.step]]
         keyboard.add(InlineKeyboardButton('>>', callback_data='>>'))
 
@@ -104,7 +108,7 @@ def callback_phones_com(call):
                               text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
                               reply_markup=keyboard)
     elif TEXT.step_5 <= len(TEXT.dept):
-        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+        [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
          TEXT.dept[TEXT.step_0:TEXT.step_5]]
 
         inline_btn_3 = InlineKeyboardButton('<<', callback_data='<<')
@@ -116,7 +120,7 @@ def callback_phones_com(call):
                               text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
                               reply_markup=keyboard)
     elif TEXT.step_5 >= len(TEXT.dept):
-        [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+        [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
          TEXT.dept[len(TEXT.dept) - TEXT.step:TEXT.step_5]]
         keyboard.add(InlineKeyboardButton('<<', callback_data='<<'))
 
@@ -132,9 +136,32 @@ def callback_location(call):
     :param call:
     :return:
     """
+
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                          text=f"*{TEXT.main_unit['LOCATION']}*", parse_mode="Markdown")
+                          text=f"*{TEXT.main_unit['LOCATION']}*", parse_mode="Markdown", )
     bot.send_location(call.message.chat.id, latitude=TEXT.main_unit['latitude'], longitude=TEXT.main_unit['longitude'])
+
+    main_menu(call)
+
+
+def main_menu(call):
+    """Финальное меню
+    """
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
+    bot.send_message(call.message.chat.id, TEXT.main_unit['Главное меню'], reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == '/menu')
+def callback_menu(call):
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(
+        InlineKeyboardButton(text=TEXT.main_unit['phones_menu'], callback_data='/phones'))
+    keyboard.add(InlineKeyboardButton(text=TEXT.main_unit['address_menu'], callback_data='/location'))
+
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                          text=f"*{TEXT.main_unit['Добро пожаловать']}*", parse_mode="Markdown",
+                          reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -144,8 +171,6 @@ def callback_true(call):
     :param call:
     :return:
     """
-    # if call.data == '/menu':
-    #     start_menu(call.message)
 
     if call.data in TEXT.hospital['Телефонная книга']:
         _phone_dict = TEXT.hospital['Телефонная книга'][call.data]['Телефон']
@@ -157,37 +182,39 @@ def callback_true(call):
         t += f"{p} : {v} \n"
 
     TEXT.step_0 = 0
-    TEXT.step_5 = 5
+    TEXT.step_5 = TEXT.step
+
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                           text=f"{t}")
+    main_menu(call)
 
 
-# def phone_processing(message):
-#     """
-#     Обработка телефоного справочника hospital.json
-#     :param message:
-#     :return:
-#     """
-#     keyboard = telebot.types.InlineKeyboardMarkup()
-#     [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
-#      TEXT.hospital['Телефонная книга']]
-#     bot.send_message(message.chat.id,
-#                      f"Выбедите нужное отделение \n",
-#                      reply_markup=keyboard)
-#
-#
-# def consulting_diagnostic_center(message):
-#     """
-#     Обработка телефоного справочника consulting_diagnostic.json
-#     :param message:
-#     :return:
-#     """
-#     keyboard = telebot.types.InlineKeyboardMarkup()
-#     [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
-#      TEXT.polyclinic['Телефонная книга']]
-#     bot.send_message(message.chat.id,
-#                      f"Выбедите нужное отделение \n",
-#                      reply_markup=keyboard)
+def phone_processing(message):
+    """
+    Обработка телефоного справочника hospital.json
+    :param message:
+    :return:
+    """
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+     TEXT.hospital['Телефонная книга']]
+    bot.send_message(message.chat.id,
+                     f"Выбедите нужное отделение \n",
+                     reply_markup=keyboard)
+
+
+def consulting_diagnostic_center(message):
+    """
+    Обработка телефоного справочника consulting_diagnostic.json
+    :param message:
+    :return:
+    """
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    [keyboard.add(telebot.types.InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
+     TEXT.polyclinic['Телефонная книга']]
+    bot.send_message(message.chat.id,
+                     f"Выбедите нужное отделение \n",
+                     reply_markup=keyboard)
 
 
 def get_location(message):
@@ -198,7 +225,7 @@ def get_location(message):
 
 def main():
     # bot.infinity_polling()
-    bot.polling(timeout=10)
+    bot.polling(timeout=1)
 
 
 if __name__ == "__main__":
