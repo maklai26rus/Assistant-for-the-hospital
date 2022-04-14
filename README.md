@@ -1,6 +1,6 @@
 # Assistant-for-the-hospital
 .env содержит токен телеграм бота
-#bot_message/main_unit.json
+#configuration/main_unit.json
 {
   "Добро пожаловать": "****",
   "ERROR": "Воспользутесь всплывающими подсказками или выберите нужную комманду. /start",
@@ -14,10 +14,10 @@
   "phones": "***"
 }
 
-#bot_message/ 
-# bot_message/administration.json
-# bot_message/hospital.json
-# bot_message/polyclinic.json
+#configuration/ 
+# configuration/administration.json
+# configuration/hospital.json
+# configuration/polyclinic.json
 {
   "Телефонная книга": {
     "ОТДЕЛЕНИЕ ***": {
