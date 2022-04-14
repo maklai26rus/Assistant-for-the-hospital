@@ -104,7 +104,12 @@ def callback_location(call):
 def get_register(call):
     TEXT.dept = [v for v in TEXT.polyclinic['Телефонная книга']]
 
-    method_name(call)
+    if call.data == '>>':
+        TEXT.step_0 += TEXT.step
+        TEXT.step_5 += TEXT.step
+    elif call.data == '<<':
+        TEXT.step_0 -= TEXT.step
+        TEXT.step_5 -= TEXT.step
 
     keyboard = active_menu(dept=TEXT.dept, step_0=TEXT.step_0, step_5=TEXT.step_5)
 
@@ -113,15 +118,6 @@ def get_register(call):
                           reply_markup=keyboard)
 
     bot.send_message(call.message.chat.id, 'Блок в разработке')
-
-
-def method_name(call):
-    if call.data == '>>':
-        TEXT.step_0 += TEXT.step
-        TEXT.step_5 += TEXT.step
-    elif call.data == '<<':
-        TEXT.step_0 -= TEXT.step
-        TEXT.step_5 -= TEXT.step
 
 
 def get_location(message):

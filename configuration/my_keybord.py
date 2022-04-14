@@ -23,6 +23,8 @@ def active_menu(dept, step_0, step_5):
         TEXT.step_0 -= TEXT.step
         TEXT.step_5 -= TEXT.step
 
+    dept = TEXT.dept = [v for v in TEXT.***['Телефонная книга']]
+
     :param dept: Словарь с данными которые нужно будет отобразить спиком в колонне
     :param step: Сколько элементов надо вывести на экран
     :param step_0:
@@ -35,7 +37,6 @@ def active_menu(dept, step_0, step_5):
     inline_btn_3 = InlineKeyboardButton('<<', callback_data='<<')
     inline_btn_menu = InlineKeyboardButton(TEXT.main_unit['short'], callback_data='/menu')
     inline_btn_4 = InlineKeyboardButton('>>', callback_data='>>')
-
 
     if step_0 <= -1:
         [keyboard.add(InlineKeyboardButton(text=str(v).replace('/', ''), callback_data=v)) for v in
