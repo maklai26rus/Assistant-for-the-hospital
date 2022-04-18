@@ -1,5 +1,5 @@
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from configuration.bot_message import TextBot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from configuration.my_settings import TextBot
 
 TEXT = TextBot()
 
@@ -104,4 +104,11 @@ def menu_foot():
     """
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton(TEXT.main_unit['menu'], callback_data='/menu'))
+    return keyboard
+
+
+def telephone_keys():
+    keyboard = ReplyKeyboardMarkup(one_time_keyboard=True)
+    keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['register_phones']}", request_contact=True))
+    keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['text_not']}"))
     return keyboard

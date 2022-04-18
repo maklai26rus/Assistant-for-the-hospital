@@ -1,16 +1,21 @@
+import os
+# import datetime
+
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from configuration.bot_message import TextBot
+# from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from configuration.my_settings import TextBot, UserData, get_date
 
 from decouple import config
 
-from configuration.my_keybord import active_menu, main_menu, menu_phones, menu_foot
+from configuration.my_keybord import active_menu, main_menu, menu_phones, menu_foot, telephone_keys
 
 SECRET_KEY_BOT = config('SECRET_KEY_BOT')
 
 bot = telebot.TeleBot(SECRET_KEY_BOT)
 TEXT = TextBot()
 PHONES_COM = ['/polyclinic', '/hospital', '/administration', '>>', '<<']
+USER = UserData()
+# USER.date = datetime.datetime.today()
 
 
 @bot.message_handler(content_types=['text'])
@@ -23,10 +28,10 @@ def run(message):
     :return:
     """
     if message.text == '/start':
+        USER.id = message.chat.id
         bot.send_message(message.from_user.id,
                          f"*{TEXT.main_unit['Добро пожаловать']}*\n",
                          reply_markup=main_menu(), parse_mode="Markdown")
-
     elif message.text == '/location':
         get_location(message)
         foot_menu(message)
@@ -102,22 +107,26 @@ def callback_location(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == '/register')
 def get_register(call):
-    TEXT.dept = [v for v in TEXT.polyclinic['Телефонная книга']]
-
-    if call.data == '>>':
-        TEXT.step_0 += TEXT.step
-        TEXT.step_5 += TEXT.step
-    elif call.data == '<<':
-        TEXT.step_0 -= TEXT.step
-        TEXT.step_5 -= TEXT.step
-
-    keyboard = active_menu(dept=TEXT.dept, step_0=TEXT.step_0, step_5=TEXT.step_5)
+    bot.send_message(chat_id=call.message.chat.id, text=f"{TEXT.main_unit['operator']}",
+                     reply_markup=telephone_keys())
 
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                          text=f"*{TEXT.main_unit['hospital']}*", parse_mode="Markdown",
-                          reply_markup=keyboard)
+                          text=f"{TEXT.main_unit['processing']}", parse_mode="Markdown")
 
-    bot.send_message(call.message.chat.id, 'Блок в разработке')
+    bot.register_next_step_handler(call.message, data_processing)
+
+
+def data_processing(message):
+    if message.text == TEXT.main_unit['text_not']:
+        bot.send_message(message.chat.id, text=TEXT.main_unit['text_no_phones'])
+        foot_menu(message)
+    else:
+        USER.phone = message.contact.phone_number
+        USER.name = message.chat.first_name
+        USER.id = message.chat.id
+        bot.send_message(message.chat.id, f"{TEXT.main_unit['text_add_direction']}", parse_mode="Markdown")
+        # text = f"телефон *{USER.phone}*\n Имя {USER.name}\n id {USER.id}",
+        foot_menu(message)
 
 
 def get_location(message):
@@ -168,6 +177,22 @@ def callback_true(call):
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                           text=f"{t}")
     foot_menu(call.message)
+
+
+@bot.message_handler(content_types=['photo'])
+def handle_docs_document(message):
+    file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+    downloaded_file = bot.download_file(file_info.file_path)
+
+    if os.path.isdir(f'photo/{message.chat.id}'):
+        src = f'photo/{message.chat.id}/{get_date()}' + '.' + \
+              file_info.file_path.split('.')[1]
+        # src = f'photo/{message.chat.id}/' + file_info.file_path.replace('photos/', '')
+        with open(src, 'wb') as new_file:
+            new_file.write(downloaded_file)
+        bot.reply_to(message, "Фото добавлено")
+    else:
+        os.mkdir(f'photo/{message.chat.id}')
 
 
 def main():

@@ -1,15 +1,5 @@
 import json
-
-
-def read_json_file(file):
-    """
-    Читаем json file
-    :param file:
-    :return: возращает словарь из json
-    """
-    with open(file, 'r', encoding='utf-8') as ff:
-        j = json.load(ff)
-    return j
+import datetime
 
 
 class TextBot:
@@ -28,3 +18,29 @@ class TextBot:
         self.step_0 = 0
         self.step_5 = self.step
         self.dept = None
+
+
+class UserData:
+
+    def __init__(self):
+        self.direction = None
+        self.name = None
+        self.id = None
+        self.phone = None
+
+
+def read_json_file(file):
+    """
+    Читаем json file
+    :param file:
+    :return: возращает словарь из json
+    """
+    with open(file, 'r', encoding='utf-8') as ff:
+        j = json.load(ff)
+    return j
+
+
+def get_date():
+    _date = datetime.datetime.today()
+    d = _date.strftime("%Y-%m-%d-%H %M %S")
+    return d
