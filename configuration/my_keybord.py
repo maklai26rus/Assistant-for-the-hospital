@@ -108,6 +108,9 @@ def menu_foot():
 
 
 def telephone_keys():
+    """Блокировка клавиатуры
+    при нажатие запрашивает данные отпользователя
+    """
     keyboard = ReplyKeyboardMarkup(one_time_keyboard=True)
     keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['register_phones']}", request_contact=True))
     keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['text_not']}"))

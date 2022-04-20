@@ -122,7 +122,7 @@ def data_processing(message):
         foot_menu(message)
     else:
         USER.phone = message.contact.phone_number
-        USER.name = message.chat.first_name
+        USER.fio_children = message.chat.first_name
         USER.id = message.chat.id
         bot.send_message(message.chat.id, f"{TEXT.main_unit['text_add_direction']}", parse_mode="Markdown")
         # text = f"телефон *{USER.phone}*\n Имя {USER.name}\n id {USER.id}",

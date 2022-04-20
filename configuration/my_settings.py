@@ -14,6 +14,7 @@ class TextBot:
         self.hospital = read_json_file('configuration/hospital.json')
         self.polyclinic = read_json_file('configuration/polyclinic.json')
         self.administration = read_json_file('configuration/administration.json')
+        self.region = read_json_file('json/region.json')
         self.step = 8
         self.step_0 = 0
         self.step_5 = self.step
@@ -24,7 +25,9 @@ class UserData:
 
     def __init__(self):
         self.direction = None
-        self.name = None
+        self.fio_children = None
+        self.fio_people = None
+        self.birth_date = None
         self.id = None
         self.phone = None
 
