@@ -7,7 +7,7 @@ from configuration.my_settings import TextBot, UserData, get_date
 
 from decouple import config
 
-from configuration.my_keybord import active_menu, main_menu, menu_phones, menu_foot, telephone_keys
+from configuration.my_keybord import active_menu, main_menu, menu_phones, menu_foot, telephone_keys, regions_keys
 
 SECRET_KEY_BOT = config('SECRET_KEY_BOT')
 
@@ -15,6 +15,8 @@ bot = telebot.TeleBot(SECRET_KEY_BOT)
 TEXT = TextBot()
 PHONES_COM = ['/polyclinic', '/hospital', '/administration', '>>', '<<']
 USER = UserData()
+
+
 # USER.date = datetime.datetime.today()
 
 
@@ -124,9 +126,42 @@ def data_processing(message):
         USER.phone = message.contact.phone_number
         USER.fio_children = message.chat.first_name
         USER.id = message.chat.id
-        bot.send_message(message.chat.id, f"{TEXT.main_unit['text_add_direction']}", parse_mode="Markdown")
-        # text = f"телефон *{USER.phone}*\n Имя {USER.name}\n id {USER.id}",
+
+        bot.send_message(message.chat.id, f"*{TEXT.main_unit['text_add_direction']}*", parse_mode="Markdown")
+        USER.photo = True
+        bot.register_next_step_handler(message, direction_processing)
         foot_menu(message)
+
+
+@bot.message_handler(content_types=['photo', 'text'])
+def direction_processing(message):
+    """
+    Обработчи получения фотографии с направлением
+
+    :param message:
+    :return:
+    """
+    if USER.photo:
+        try:
+            file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+            downloaded_file = bot.download_file(file_info.file_path)
+
+            if os.path.isdir(f'photo/{message.chat.id}'):
+                src = f'photo/{message.chat.id}/{get_date()}' + '.' + \
+                      file_info.file_path.split('.')[1]
+                with open(src, 'wb') as new_file:
+                    new_file.write(downloaded_file)
+                bot.reply_to(message, TEXT.main_unit['text_photo'])
+            else:
+                os.mkdir(f'photo/{message.chat.id}')
+
+            bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_region']}",
+                             reply_markup=regions_keys())
+            USER.photo = False
+
+        except TypeError:
+            bot.send_message(message.chat.id, f"{TEXT.main_unit['text_add_direction']}", parse_mode="Markdown")
+            bot.register_next_step_handler(message, direction_processing)
 
 
 def get_location(message):
@@ -179,20 +214,21 @@ def callback_true(call):
     foot_menu(call.message)
 
 
-@bot.message_handler(content_types=['photo'])
-def handle_docs_document(message):
-    file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
-
-    if os.path.isdir(f'photo/{message.chat.id}'):
-        src = f'photo/{message.chat.id}/{get_date()}' + '.' + \
-              file_info.file_path.split('.')[1]
-        # src = f'photo/{message.chat.id}/' + file_info.file_path.replace('photos/', '')
-        with open(src, 'wb') as new_file:
-            new_file.write(downloaded_file)
-        bot.reply_to(message, "Фото добавлено")
-    else:
-        os.mkdir(f'photo/{message.chat.id}')
+# @bot.message_handler(content_types=['photo'])
+# def handle_docs_document(message):
+#     file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+#     downloaded_file = bot.download_file(file_info.file_path)
+#
+#     if os.path.isdir(f'photo/{message.chat.id}'):
+#         src = f'photo/{message.chat.id}/{get_date()}' + '.' + \
+#               file_info.file_path.split('.')[1]
+#         # src = f'photo/{message.chat.id}/' + file_info.file_path.replace('photos/', '')
+#         with open(src, 'wb') as new_file:
+#             new_file.write(downloaded_file)
+#         USER.photo = True
+#         bot.reply_to(message, "Фото добавлено")
+#     else:
+#         os.mkdir(f'photo/{message.chat.id}')
 
 
 def main():

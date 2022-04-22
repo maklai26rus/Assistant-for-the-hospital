@@ -115,3 +115,13 @@ def telephone_keys():
     keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['register_phones']}", request_contact=True))
     keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['text_not']}"))
     return keyboard
+
+
+def regions_keys():
+    """Блокировка клавиатуры
+    при нажатие запрашивает данные отпользователя
+    """
+    keyboard = ReplyKeyboardMarkup(one_time_keyboard=True)
+    [keyboard.add(KeyboardButton(text=f"{v}")) for v in TEXT.region['регион']]
+    # keyboard.add(KeyboardButton(text=f"{TEXT.main_unit['text_not']}"))
+    return keyboard

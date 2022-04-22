@@ -30,6 +30,7 @@ class UserData:
         self.birth_date = None
         self.id = None
         self.phone = None
+        self.photo = False
 
 
 def read_json_file(file):
