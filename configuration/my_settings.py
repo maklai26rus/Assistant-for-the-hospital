@@ -10,10 +10,10 @@ class TextBot:
     """
 
     def __init__(self):
-        self.main_unit = read_json_file('configuration/main_unit.json')
-        self.hospital = read_json_file('configuration/hospital.json')
-        self.polyclinic = read_json_file('configuration/polyclinic.json')
-        self.administration = read_json_file('configuration/administration.json')
+        self.main_unit = read_json_file('json/main_unit.json')
+        self.hospital = read_json_file('json/hospital.json')
+        self.polyclinic = read_json_file('json/polyclinic.json')
+        self.administration = read_json_file('json/administration.json')
         self.region = read_json_file('json/region.json')
         self.step = 8
         self.step_0 = 0

@@ -2,7 +2,7 @@ import os
 # import datetime
 
 import telebot
-from configuration.my_settings import TextBot, UserData, get_date, save_log
+from configuration.my_settings import TextBot, UserData, get_date
 
 from decouple import config
 
