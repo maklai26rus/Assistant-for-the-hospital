@@ -2,7 +2,7 @@ import os
 # import datetime
 
 import telebot
-from configuration.my_settings import TextBot, UserData, get_date
+from configuration.my_settings import TextBot, UserData, get_date, save_log
 
 from decouple import config
 
@@ -136,14 +136,15 @@ def data_processing(message):
         foot_menu(message)
         try:
             USER.phone = message.contact.phone_number
-        except AttributeError:
-            print(USER.phone)
-        USER.fio_people = message.chat.first_name
-        USER.id = message.chat.id
+            USER.fio_people = message.chat.first_name
+            USER.id = message.chat.id
 
-        bot.send_message(message.chat.id, f"*{TEXT.main_unit['text_add_direction']}*", parse_mode="Markdown")
-        USER.photo = True
-        bot.register_next_step_handler(message, direction_processing)
+            bot.send_message(message.chat.id, f"*{TEXT.main_unit['text_add_direction']}*", parse_mode="Markdown")
+            USER.photo = True
+            bot.register_next_step_handler(message, direction_processing)
+        except AttributeError:
+            bot.send_message(message.chat.id, text=TEXT.main_unit['text_no_phones_2'])
+            foot_menu(message)
 
 
 @bot.message_handler(content_types=['photo', 'text'])
@@ -171,18 +172,50 @@ def direction_processing(message):
             bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_region']}",
                              reply_markup=KEYBOARD.regions_keys())
             USER.photo = False
-            bot.register_next_step_handler(message, xxx)
+            bot.register_next_step_handler(message, requesting_child_name)
 
         except TypeError:
             bot.send_message(message.chat.id, f"{TEXT.main_unit['text_add_direction']}", parse_mode="Markdown")
             bot.register_next_step_handler(message, direction_processing)
 
 
-def xxx(message):
+def requesting_child_name(message):
+    """
+    Запрос на имя ребенка
+    :param message:
+    :return:
+    """
     USER.direction = message.text
-    print(USER.direction)
-    print(USER.phone)
-    print(USER.fio_people)
+    bot.send_message(message.chat.id, TEXT.main_unit['child_name'])
+    bot.register_next_step_handler(message, birth_date)
+
+
+def birth_date(message):
+    """
+    Запрос на дату рождения
+    :param message:
+    :return:
+    """
+    USER.fio_children = message.text
+    bot.send_message(message.chat.id, TEXT.main_unit['birth_date'])
+    bot.register_next_step_handler(message, choose_ticket)
+
+
+def choose_ticket(message):
+    """
+    Закантивает регистрация
+    Ваше ФИО USER.fio_people
+    Ребенок ФИО USER.fio_children
+    Возраст ребенка USER.birth_date
+    Ваш район USER.direction
+    Телефон USER.phone
+
+    :param message:
+    :return:
+    """
+    USER.birth_date = message.text
+    text = f'Ваше ФИО {USER.fio_people}\nРебенок ФИО {USER.fio_children}\nВозраст ребенка {USER.birth_date}\nВаш район {USER.direction}\nТелефон {USER.phone}'
+    bot.send_message(message.chat.id, text)
 
 
 def get_location(message):
@@ -200,7 +233,6 @@ def foot_menu(message):
     Меню выдаваемое в конце диолога
     """
     bot.send_message(message.chat.id, TEXT.main_unit['Главное меню'], reply_markup=KEYBOARD.menu_foot())
-    # bot.send_message(message.chat.id, KEYBOARD.finish_registration, reply_markup=KEYBOARD.menu_foot())
 
 
 @bot.callback_query_handler(func=lambda call: call.data == '/menu')
