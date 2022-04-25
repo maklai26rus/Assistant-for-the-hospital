@@ -1,23 +1,40 @@
 # Assistant-for-the-hospital
 .env содержит токен телеграм бота
-#configuration/main_unit.json
+#json/main_unit.json
 {
-  "Добро пожаловать": "****",
+  "Добро пожаловать": ***,
+  "Главное меню": ***,
   "ERROR": "Воспользутесь всплывающими подсказками или выберите нужную комманду. /start",
-  "LOCATION": "***",
-  "address_menu": "***'",
-  "phones_menu": "***'",
-  "hospital": "***",
-  "polyclinic": "***",
+  "LOCATION": ***,
+  "menu": "Главное меню",
+  "short": "Меню",
+  "short_menu": "Меню",
+  "address_menu": ***,
+  "phones_menu": "Телефоны ☎",
+  "hospital": "Круглосуточный стационар ☎️",
+  "polyclinic": "Консультативно-диагностичский центр ☎",
+  "administration": "Администрация ☎",
   "latitude": ***,
-  "longitude": ***,
-  "phones": "***"
+  "longitude":***,
+  "phones": "Выберите нужную категорию ☎",
+  "register": "Запись на прием",
+  "register_phones": "Подтвердить свой контактные данные",
+  "child_name": "ФИО ребенка",
+  "birth_date": "Дата рождения",
+  "operator": "Оставьте ваш контактный номер чтобы наш оператор смог связаться с вами.",
+  "text_not":"Отказ",
+  "text_no_phones":"Регестриция не может быть продолжена, так как нужно потвердить свои данные",
+  "text_no_phones_2":"Регестриция не может быть продолжена, так как нужно потвердить свои данные через возможност телеграмм",
+  "processing": "Для продолжении записи на прием требуеться потверждения ваших данных ",
+  "text_add_direction": "Пришлите фотографию направления.\nНаправления будет проверяться",
+  "text_photo": "Фотография успешно добавления",
+  "text_region": "С какого вы региона? Выберите из списка или укажите свой"
 }
 
 #configuration/ 
-# configuration/administration.json
-# configuration/hospital.json
-# configuration/polyclinic.json
+# json/administration.json
+# json/hospital.json
+# json/polyclinic.json
 {
   "Телефонная книга": {
     "ОТДЕЛЕНИЕ ***": {
