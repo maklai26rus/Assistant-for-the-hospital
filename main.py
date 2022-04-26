@@ -2,6 +2,8 @@ import os
 # import datetime
 
 import telebot
+
+from configuration.my_calendar import MyStyleCalendar, LSTEP
 from configuration.my_settings import TextBot, UserData, get_date
 
 from decouple import config
@@ -198,7 +200,26 @@ def birth_date(message):
     """
     USER.fio_children = message.text
     bot.send_message(message.chat.id, TEXT.main_unit['birth_date'])
+    calendar, step = MyStyleCalendar(locale='ru').build()
+    bot.send_message(message.chat.id,
+                     f"Нужно выбрать {LSTEP[step]}",
+                     reply_markup=calendar)
+
     bot.register_next_step_handler(message, choose_ticket)
+
+
+@bot.callback_query_handler(func=MyStyleCalendar.func())
+def cal(c):
+    result, key, step = MyStyleCalendar(locale='ru').process(c.data)
+    if not result and key:
+        bot.edit_message_text(f"Нужно выбрать {LSTEP[step]}",
+                              c.message.chat.id,
+                              c.message.message_id,
+                              reply_markup=key)
+    elif result:
+        bot.edit_message_text(f"Выбрана дата {result.day}.{result.month}.{result.year}",
+                              c.message.chat.id,
+                              c.message.message_id)
 
 
 def choose_ticket(message):
@@ -261,7 +282,7 @@ def callback_true(call):
     try:
         t = f"{call.data.replace('/', '')}:\n"
         for p, v in _phone_dict.items():
-            t += f"{p} : {v} \n"
+            t += f"{p} : {v}\n"
     except UnboundLocalError as er:
         print("Ошибка словаря", er)
 

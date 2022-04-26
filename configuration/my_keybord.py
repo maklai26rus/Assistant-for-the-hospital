@@ -6,8 +6,8 @@ class MyKeyboard:
 
     def __init__(self):
         self.text = TextBot()
-        self.left = "<<<"
-        self.right = ">>>"
+        self.left = "⬅"
+        self.right = "➡"
         self.centre = self.text.main_unit['short_menu']
         self.finish_registration = self.text.main_unit['Главное меню']
 
@@ -16,7 +16,7 @@ class MyKeyboard:
 
         [*************]
         [*************]
-        [<<][Меню][>>]]
+        [⬅][Меню][➡]]
 
 
         step = TEXT.step
