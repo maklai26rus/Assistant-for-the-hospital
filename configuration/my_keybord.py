@@ -1,4 +1,5 @@
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+# from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from configuration.my_settings import TextBot
 
 
@@ -71,11 +72,11 @@ class MyKeyboard:
         Основоное меню
         :return:
         """
-        keyboard = InlineKeyboardMarkup()
-        keyboard.add(
+        keyboard = InlineKeyboardMarkup(row_width=2)
+        keyboard.insert(
             InlineKeyboardButton(text=self.text.main_unit['phones_menu'], callback_data='/phones'))
-        keyboard.add(InlineKeyboardButton(text=self.text.main_unit['address_menu'], callback_data='/location'))
-        keyboard.add(InlineKeyboardButton(text=self.text.main_unit['register'], callback_data='/register'))
+        keyboard.insert(InlineKeyboardButton(text=self.text.main_unit['address_menu'], callback_data='/location'))
+        keyboard.insert(InlineKeyboardButton(text=self.text.main_unit['register'], callback_data='/register'))
         return keyboard
 
     def menu_phones(self):
@@ -84,20 +85,20 @@ class MyKeyboard:
         выдает список по вывобру нужной котегории
         :return:
         """
-        keyboard = InlineKeyboardMarkup()
+        keyboard = InlineKeyboardMarkup(row_width=1)
 
-        keyboard.add(
+        keyboard.insert(
             InlineKeyboardButton(text=self.text.main_unit['hospital'],
                                  callback_data='/hospital', ))
-        keyboard.add(
+        keyboard.insert(
             InlineKeyboardButton(text=self.text.main_unit['polyclinic'],
                                  callback_data='/polyclinic'))
 
-        keyboard.add(
+        keyboard.insert(
             InlineKeyboardButton(text=self.text.main_unit['administration'],
                                  callback_data='/administration'))
 
-        keyboard.add(InlineKeyboardButton(self.text.main_unit['menu'], callback_data='/menu'))
+        keyboard.insert(InlineKeyboardButton(self.text.main_unit['menu'], callback_data='/menu'))
         return keyboard
 
     def menu_foot(self):
@@ -107,16 +108,22 @@ class MyKeyboard:
         :return:
         """
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton(self.text.main_unit['menu'], callback_data='/menu'))
+        keyboard.insert(InlineKeyboardButton(self.text.main_unit['menu'], callback_data='/menu'))
         return keyboard
 
     def telephone_keys(self):
         """Блокировка клавиатуры
         при нажатие запрашивает данные отпользователя
         """
-        keyboard = ReplyKeyboardMarkup(one_time_keyboard=True)
-        keyboard.add(KeyboardButton(text=f"{self.text.main_unit['register_phones']}", request_contact=True))
-        keyboard.add(KeyboardButton(text=f"{self.text.main_unit['text_not']}"))
+        keyboard = ReplyKeyboardMarkup(one_time_keyboard=True, row_width=2)
+        # keyboard.insert(KeyboardButton(text=f"{self.text.main_unit['register_phones']}", request_contact=True))
+        # keyboard.insert(KeyboardButton(text=f"{self.text.main_unit['text_not']}"))
+        # keyboard = InlineKeyboardMarkup(row_width=2)
+        k1 = KeyboardButton(text=f"{self.text.main_unit['register_phones']}", request_contact=True,
+                                  )
+        k2 = KeyboardButton(text=f"{self.text.main_unit['text_not']}", )
+        keyboard.row(k1, k2)
+
         return keyboard
 
     def regions_keys(self):
