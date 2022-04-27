@@ -27,10 +27,25 @@ class UserData:
         self.direction = None
         self.fio_children = None
         self.fio_people = None
-        self.birth_date = None
         self.id = None
         self.phone = None
         self.photo = False
+
+        self.today = datetime.date.today()
+        self.correct_date = None
+
+    def get_date(self, text):
+        """Определение правильности вводимых надых по дате"""
+        try:
+            _t = text.split('.')
+            _get_start = datetime.date(int(_t[2]), int(_t[1]), int(_t[0]))
+        except AttributeError:
+            _get_start = datetime.date(text.year, text.month, text.day)
+        _today = datetime.date(self.today.year, self.today.month, self.today.day)
+        if _get_start < _today:
+            return _get_start
+        else:
+            return None
 
 
 def read_json_file(file):

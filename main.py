@@ -200,12 +200,15 @@ def birth_date(message):
     """
     USER.fio_children = message.text
     bot.send_message(message.chat.id, TEXT.main_unit['birth_date'])
+    method_name(message.chat.id)
+    # bot.register_next_step_handler(message, choose_ticket)
+
+
+def method_name(chat_id) -> None:
     calendar, step = MyStyleCalendar(locale='ru').build()
-    bot.send_message(message.chat.id,
+    bot.send_message(chat_id,
                      f"Нужно выбрать {LSTEP[step]}",
                      reply_markup=calendar)
-
-    bot.register_next_step_handler(message, choose_ticket)
 
 
 @bot.callback_query_handler(func=MyStyleCalendar.func())
@@ -220,6 +223,12 @@ def cal(c):
         bot.edit_message_text(f"Выбрана дата {result.day}.{result.month}.{result.year}",
                               c.message.chat.id,
                               c.message.message_id)
+        USER.correct_date = USER.get_date(result)
+        if not USER.correct_date:
+            bot.send_message(c.message.chat.id, 'Дата не соответсвует')
+            method_name(c.message.chat.id)
+        else:
+            choose_ticket(c.message)
 
 
 def choose_ticket(message):
@@ -234,8 +243,8 @@ def choose_ticket(message):
     :param message:
     :return:
     """
-    USER.birth_date = message.text
-    text = f'Ваше ФИО {USER.fio_people}\nРебенок ФИО {USER.fio_children}\nВозраст ребенка {USER.birth_date}\nВаш район {USER.direction}\nТелефон {USER.phone}'
+    # USER.birth_date = message.text удалить
+    text = f'Ваше ФИО {USER.fio_people}\nРебенок ФИО {USER.fio_children}\nВозраст ребенка {USER.correct_date}\nВаш район {USER.direction}\nТелефон {USER.phone}'
     bot.send_message(message.chat.id, text)
 
 
