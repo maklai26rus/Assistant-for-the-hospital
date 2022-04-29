@@ -31,7 +31,7 @@ USER = UserData()
 # USER.date = datetime.datetime.today()
 
 
-@dp.message_handler(text='/start')
+@dp.message_handler(text=['/start', '/location'])
 async def run(message):
     """
     Начала работы программы. Отрабатывает комманды полученные отпользователя
@@ -159,14 +159,17 @@ async def get_register(call):
     :param call:
     :return:
     """
-    keyboard = KEYBOARD.telephone_keys()
-
-    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                text=f"{TEXT.main_unit['processing']}", parse_mode="Markdown")
+    # keyboard = KEYBOARD.telephone_keys()
 
     await bot.send_message(chat_id=call.message.chat.id, text=f"{TEXT.main_unit['operator']}",
                            reply_markup=KEYBOARD.telephone_keys())
+
+    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                text=f"{TEXT.main_unit['processing']}", parse_mode="Markdown",
+                                reply_markup=KEYBOARD.consent_url())
+    print(call.message.text)
     # await bot.register_next_step_handler(call.message, data_processing)
+    # await data_processing(call.message)
 
 
 async def data_processing(message):

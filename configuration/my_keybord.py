@@ -120,7 +120,7 @@ class MyKeyboard:
         # keyboard.insert(KeyboardButton(text=f"{self.text.main_unit['text_not']}"))
         # keyboard = InlineKeyboardMarkup(row_width=2)
         k1 = KeyboardButton(text=f"{self.text.main_unit['register_phones']}", request_contact=True,
-                                  )
+                            )
         k2 = KeyboardButton(text=f"{self.text.main_unit['text_not']}", )
         keyboard.row(k1, k2)
 
@@ -132,4 +132,11 @@ class MyKeyboard:
         """
         keyboard = ReplyKeyboardMarkup(one_time_keyboard=True)
         [keyboard.add(KeyboardButton(text=f"{v}")) for v in self.text.region['регион']]
+        return keyboard
+
+    def consent_url(self):
+        keyboard = InlineKeyboardMarkup()
+        btnurl = InlineKeyboardButton(text='Согласие доработать',
+                                      url="https://медицина-онлайн.рф/consent/",)
+        keyboard.insert(btnurl)
         return keyboard
