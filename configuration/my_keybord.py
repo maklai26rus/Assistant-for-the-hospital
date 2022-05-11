@@ -77,6 +77,7 @@ class MyKeyboard:
             InlineKeyboardButton(text=self.text.main_unit['phones_menu'], callback_data='/phones'))
         keyboard.insert(InlineKeyboardButton(text=self.text.main_unit['address_menu'], callback_data='/location'))
         keyboard.insert(InlineKeyboardButton(text=self.text.main_unit['register'], callback_data='/register'))
+        keyboard.insert(InlineKeyboardButton(text=self.text.main_unit['print'], callback_data='/print'))
         return keyboard
 
     def menu_phones(self):

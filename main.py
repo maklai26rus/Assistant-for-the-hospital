@@ -20,7 +20,7 @@ bot = Bot(token=SECRET_KEY_BOT)
 # Диспетчер для бота
 dp = Dispatcher(bot)
 # Включаем логирование, чтобы не пропустить важные сообщения
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 TEXT = TextBot()
 KEYBOARD = MyKeyboard()
@@ -31,7 +31,7 @@ USER = UserData()
 # USER.date = datetime.datetime.today()
 
 
-@dp.message_handler(text=['/start', '/location'])
+@dp.message_handler(commands=['start', 'location'])
 async def run(message):
     """
     Начала работы программы. Отрабатывает комманды полученные отпользователя
@@ -92,6 +92,18 @@ async def phone_output(_phone_dict, call):
     await foot_menu(call.message)
 
 
+@dp.callback_query_handler(text='/print')
+async def callback_print(call):
+    """
+    Отпработка нажития команды /phones
+    :param call:
+    :return:
+    """
+
+    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                text=f"*Отправте файил для печати*", parse_mode="Markdown")
+
+
 @dp.callback_query_handler(text='/phones')
 async def callback_phones(call):
     """
@@ -112,15 +124,18 @@ async def callback_phones_com(call):
     :param call:
     :return:
     """
+
+    _text_row = None
+
     if call.data == "/hospital":
         TEXT.dept = [v for v in TEXT.hospital['Телефонная книга']]
-        t = TEXT.main_unit['hospital']
+        _text_row = TEXT.main_unit['hospital']
     elif call.data == "/administration":
         TEXT.dept = [v for v in TEXT.administration['Телефонная книга']]
-        t = TEXT.main_unit['administration']
+        _text_row = TEXT.main_unit['administration']
     elif call.data == "/polyclinic":
         TEXT.dept = [v for v in TEXT.polyclinic['Телефонная книга']]
-        t = TEXT.main_unit['polyclinic']
+        _text_row = TEXT.main_unit['polyclinic']
 
     if call.data == KEYBOARD.right:
         TEXT.step_0 += TEXT.step
@@ -132,7 +147,7 @@ async def callback_phones_com(call):
     keyboard = KEYBOARD.active_menu(dept=TEXT.dept, step_0=TEXT.step_0, step_5=TEXT.step_5)
 
     await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                text=f"*{t}*", parse_mode="Markdown",
+                                text=f"*{_text_row}*", parse_mode="Markdown",
                                 reply_markup=keyboard)
 
 
@@ -159,17 +174,27 @@ async def get_register(call):
     :param call:
     :return:
     """
-    # keyboard = KEYBOARD.telephone_keys()
+    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                text=f"{TEXT.main_unit['processing']}", parse_mode="Markdown",
+                                reply_markup=KEYBOARD.consent_url())
 
     await bot.send_message(chat_id=call.message.chat.id, text=f"{TEXT.main_unit['operator']}",
                            reply_markup=KEYBOARD.telephone_keys())
 
-    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                text=f"{TEXT.main_unit['processing']}", parse_mode="Markdown",
-                                reply_markup=KEYBOARD.consent_url())
-    print(call.message.text)
-    # await bot.register_next_step_handler(call.message, data_processing)
-    # await data_processing(call.message)
+
+# TODO Творческий кризис. Ушел длелать другой проект
+@dp.message_handler(lambda message: message.text == 'Отказ')
+async def xx(message):
+    await bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_no_phones']}")
+    await foot_menu(message)
+
+
+# TODO Творческий кризис. Ушел длелать другой проект
+@dp.message_handler()
+async def xx(message):
+    print('hi', message.contact)
+    await message.reply(message)
+    # await bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_no_phones']}")
 
 
 async def data_processing(message):
