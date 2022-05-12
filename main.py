@@ -182,19 +182,17 @@ async def get_register(call):
                            reply_markup=KEYBOARD.telephone_keys())
 
 
-# TODO Творческий кризис. Ушел длелать другой проект
 @dp.message_handler(lambda message: message.text == 'Отказ')
-async def xx(message):
+async def abandoning_phone(message):
     await bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_no_phones']}")
     await foot_menu(message)
 
 
-# TODO Творческий кризис. Ушел длелать другой проект
-@dp.message_handler()
-async def xx(message):
-    print('hi', message.contact)
-    await message.reply(message)
-    # await bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_no_phones']}")
+@dp.message_handler(content_types=types.ContentType.CONTACT)
+async def process_register(message: types.Message):
+    USER.phone = message.contact["phone_number"]
+    USER.fio_people = message.contact["first_name"]
+    await bot.send_message(message.chat.id, f"Ваше Имя {USER.fio_people}? ")
 
 
 async def data_processing(message):
@@ -226,7 +224,7 @@ async def data_processing(message):
                 await foot_menu(message)
 
 
-@dp.message_handler(content_types=['photo', 'text'])
+@dp.message_handler(content_types=['photo', 'text'], )
 async def direction_processing(message):
     """
     Обработчи получения фотографии с направлением
