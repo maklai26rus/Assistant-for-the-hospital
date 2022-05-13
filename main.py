@@ -184,12 +184,15 @@ async def get_register(call):
 
 @dp.message_handler(lambda message: message.text == 'Отказ')
 async def abandoning_phone(message):
+    """Ловит события отказа от потверждении телефона"""
+
     await bot.send_message(chat_id=message.chat.id, text=f"{TEXT.main_unit['text_no_phones']}")
     await foot_menu(message)
 
 
 @dp.message_handler(content_types=types.ContentType.CONTACT)
 async def process_register(message: types.Message):
+    """Стоит фильт на согласия потвердить телефон """
     USER.phone = message.contact["phone_number"]
     USER.fio_people = message.contact["first_name"]
     await bot.send_message(message.chat.id, f"Ваше Имя {USER.fio_people}? ")
