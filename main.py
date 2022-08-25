@@ -6,7 +6,7 @@ import os
 
 # import telebot
 
-from configuration.my_calendar import MyStyleCalendar, LSTEP
+# from configuration.my_calendar import MyStyleCalendar, LSTEP
 from configuration.my_settings import TextBot, UserData, get_date
 
 from decouple import config
@@ -15,20 +15,16 @@ from configuration.my_keybord import MyKeyboard
 
 SECRET_KEY_BOT = config('SECRET_KEY_BOT')
 
-# Объект бота
 bot = Bot(token=SECRET_KEY_BOT)
-# Диспетчер для бота
+
 dp = Dispatcher(bot)
-# Включаем логирование, чтобы не пропустить важные сообщения
+
 # logging.basicConfig(level=logging.INFO)
 
 TEXT = TextBot()
 KEYBOARD = MyKeyboard()
 PHONES_COM = ['/polyclinic', '/hospital', '/administration', KEYBOARD.right, KEYBOARD.left]
 USER = UserData()
-
-
-# USER.date = datetime.datetime.today()
 
 
 @dp.message_handler(commands=['start', 'location'])
@@ -62,18 +58,21 @@ async def menu(call):
 
 @dp.callback_query_handler(text=[v for v in TEXT.polyclinic['Телефонная книга']])
 async def polyclinic(call):
+    """Телефоная книга поликлиники"""
     _phone_dict = TEXT.polyclinic['Телефонная книга'][call.data]['Телефон']
     await phone_output(_phone_dict, call)
 
 
 @dp.callback_query_handler(text=[v for v in TEXT.administration['Телефонная книга']])
 async def administration(call):
+    """Телефоная книга администрации"""
     _phone_dict = TEXT.administration['Телефонная книга'][call.data]['Телефон']
     await phone_output(_phone_dict, call)
 
 
 @dp.callback_query_handler(text=[v for v in TEXT.hospital['Телефонная книга']])
 async def hospital(call):
+    """Телефоная книга больницы"""
     _phone_dict = TEXT.hospital['Телефонная книга'][call.data]['Телефон']
     await phone_output(_phone_dict, call)
 
